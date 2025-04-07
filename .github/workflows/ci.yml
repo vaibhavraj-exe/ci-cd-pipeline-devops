@@ -1,21 +1,20 @@
-name: CI Pipeline
+name: CI/CD Pipeline
 
 on: [push]
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     permissions:
       contents: write
       pages: write
       id-token: write
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # Required for gh-pages action
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -23,11 +22,13 @@ jobs:
           python-version: '3.x'
 
       - name: Generate HTML
-        run: python hello.py
+        run: |
+          python hello.py
+          ls -R docs  # Verify generated files
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/
-          force_orphan: true
+          force_orphan: true  # Clean branch history
