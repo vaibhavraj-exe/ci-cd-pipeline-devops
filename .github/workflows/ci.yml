@@ -3,29 +3,22 @@ name: CI Pipeline
 on: [push]
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          # If you have requirements, you can install them here
-          # pip install -r requirements.txt
-
-      - name: Run Hello World Script
+      - name: Generate HTML
         run: python hello.py
 
-      # Optional: Run tests if you created test_hello.py
-      - name: Run tests
-        run: |
-          pip install pytest
-          pytest test_hello.py
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/
